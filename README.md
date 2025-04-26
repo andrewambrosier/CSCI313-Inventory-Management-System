@@ -1,1 +1,1 @@
-# CSCI313-Inventory-Management-System
+# CSCI313-Inventory-ManagemenThis project aims to develop an inventory management system designed specifically for small farms. The system will enable farmers to efficiently track and manage their farm inventory, including supplies, equipment, and sales data. By providing an intuitive and user-friendly interface, the system will help farmers maintain accurate records, plan for future needs, and improve overall productivity.t-System
