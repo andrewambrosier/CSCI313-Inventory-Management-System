@@ -1,27 +1,110 @@
 <p>inventory works!</p>
 <div class="inventory">
-    <h1>Inventory</h1>
+  <h1>Inventory</h1>
 
-    <h2>Farm Supply List</h2>
+  <h2>Farm Supply List</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">Category</th>
+        <th scope="col">Expiration Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of inventoryItems">
+        <td>{{ item.id }}</td>
+        <td>{{ item.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.category }}</td>
+        <td>{{ item.expirationDate | date : "yyyy-MM-dd" }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Stock Levels</h2>
+  <div *ngFor="let item of inventoryItems" class="mb-3">
+    <label>{{ item.name }} ({{ item.quantity }}/{{ item.maxStock }})</label>
+    <div
+      class="progress"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    >
+      <div
+        class="progress-bar"
+        [style.width]="getStockPercentage(item) + '%'"
+        [ngClass]="{
+          'bg-danger': getStockPercentage(item) < 30,
+          'bg-warning': getStockPercentage(item) < 60,
+          'bg-success': getStockPercentage(item) >= 60
+        }"
+      >
+        {{ getStockPercentage(item) }}%
+      </div>
+    </div>
+  </div>
+  <h2>Items Status</h2>
+  <div class="dropdown">
+    <button
+      class="btn btn-primary dropdown-toggle"
+      type="button"
+      id="categoryDropdown"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      Choose a Category
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+      <li>
+        <a class="dropdown-item" href="#" (click)="selectCategory('Seed')"
+          >Seed</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#" (click)="selectCategory('Fertilizer')"
+          >Fertilizer</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#" (click)="selectCategory('Pesticides')"
+          >Pesticides</a
+        >
+      </li>
+      <li>
+        <a
+          class="dropdown-item"
+          href="#"
+          (click)="selectCategory('Veterinary Supplies')"
+          >Veterinary Supplies</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#" (click)="selectCategory('Feed')"
+          >Feed</a
+        >
+      </li>
+    </ul>
+  </div>
+  <div *ngIf="selectedCategory">
+    <h2>{{ selectedCategory }} Items</h2>
     <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Category</th>
-            <th scope="col">Expiration Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of supplyItems">
-            <td>{{ item.id }}</item></th>
-            <td>{{ item.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.category }}</td>
-            <td>{{ item.expirationDate }}</td>
-          </tr>
-          
-        </tbody>
-      </table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Stock Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of getFilteredItems()">
+          <td>{{ item.id }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.quantity }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
