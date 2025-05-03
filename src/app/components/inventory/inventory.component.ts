@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { InventoryItem } from '../../Models/inventory.model';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { findIndex } from 'rxjs';
 
 @Component({
   selector: 'app-inventory',
@@ -44,15 +45,46 @@ export class InventoryComponent {
     }; 
   }
 
+  isEditing = false;
+  editIndex: number | null = null;
+
+  editSupply(item: any) {
+    this.isEditing = true;
+    this.editIndex = this.inventoryItems.findIndex(i => i.id === item.id);
+    this.newItem = {...item};
+  }
+
+  updateSupply() {
+    if (this.editIndex !== null){
+      this.inventoryItems[this.editIndex] = {...this.newItem};
+      console.log('Supply updates:', this.newItem);
+      this.cancelEdit();
+    }
+  }
+
+  cancelEdit() {
+    this.isEditing = false;
+    this.editIndex = null;
+    this.newItem = { id: 0, productID: 0, name: '', quantity: 0, restockThreshold: 0,
+      costPrice: 0, salePrice: 0, maxStock: 100, expirationDate: new Date(), category: ''
+    }; 
+  }
+
   selectedCategory: string | null = null;
+  searchTerm: string = '';
 
   selectCategory(category: string): void {
     this.selectedCategory = category;
   }
 
-  getFilteredItems(): InventoryItem[] {
-    return this.inventoryItems.filter(
-      item => item.category === this.selectedCategory
-    );
+  getFilteredItems() {
+    return this.inventoryItems.filter(item => {
+      const matchesCategory =
+        !this.selectedCategory || item.category === this.selectedCategory;
+      const matchesSearch =
+        !this.searchTerm ||
+        item.name.toLowerCase().includes(this.searchTerm.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
   }
 }
