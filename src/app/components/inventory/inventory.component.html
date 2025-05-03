@@ -1,149 +1,49 @@
-<p>inventory works!</p>
+<p class="inventory-status">Inventory is up and running!</p>
+
 <div class="inventory">
-  <h1>Inventory</h1>
+  <h1 class="main-title">Inventory Management</h1>
 
-  <!-- Farm Supply List: Displays a table of inventory items with their ID, name, quantity, category, and expiration date -->
-
-  <h2>Farm Supply List</h2>
-  <!-- Creates a table to list all of the supply Items showing ID, Name, Quantity,
-  Category, Expiration Date-->
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Name</th>
-        <th scope="col">Quantity</th>
-        <th scope="col">Category</th>
-        <th scope="col">Expiration Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Iterates through inventoryItems and displays their details -->
-
-      <tr *ngFor="let item of inventoryItems">
-        <td>{{ item.id }}</td>
-        <td>{{ item.name }}</td>
-        <td>{{ item.quantity }}</td>
-        <td>{{ item.category }}</td>
-        <td>{{ item.expirationDate | date : "yyyy-MM-dd" }}</td>
-      </tr>
-    </tbody>
-  </table>
-  <!-- Form to add new supply items -->
-
-  <h2>Add Items</h2>
-  <form (submit)="addSupply()" class="mb-4">
-    <div class="mb-3">
-      <label for="name" class="form-label">Item Name</label>
-      <input
-        type="text"
-        class="form-control"
-        id="name"
-        [(ngModel)]="newItem.name"
-        required
-      />
-    </div>
-    <div class="mb-3">
-      <label for="quantity" class="form-label">Quantity</label>
-      <input
-        type="number"
-        class="form-control"
-        id="quantity"
-        [(ngModel)]="newItem.quantity"
-        required
-      />
-    </div>
-    <div class="mb-3">
-      <label for="category" class="form-label">Category</label>
-      <select class="form-select" id="category" [(ngModel)]="newItem.category">
-        <option value="Seed">Seed</option>
-        <option value="Fertilizer">Fertilizer</option>
-        <option value="Pesticides">Pesticides</option>
-        <option value="Veterinary Supplies">Veterinary Supplies</option>
-        <option value="Feed">Feed</option>
-      </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Add Supply</button>
-  </form>
-  <!-- Stock Levels: Progress bars show how much of each item is in stock -->
-
-  <h2>Stock Levels</h2>
-  <div *ngFor="let item of inventoryItems" class="mb-3">
-    <!--creates progress bars for each Item in stock-->
-    <label>{{ item.name }} ({{ item.quantity }}/{{ item.maxStock }})</label>
-    <div
-      class="progress"
-      role="progressbar"
-      aria-valuemin="0"
-      aria-valuemax="100"
-    >
-      <div
-        class="progress-bar"
-        [style.width]="getStockPercentage(item) + '%'"
-        [ngClass]="{
-          'bg-danger': getStockPercentage(item) < 30,
-          'bg-warning': getStockPercentage(item) < 60,
-          'bg-success': getStockPercentage(item) >= 60
-        }"
-      >
-        {{ getStockPercentage(item) }}%
+  <section>
+     <!-- Category Filter -->
+     <div class="d-flex gap-3 mb-4 align-items-end">
+      <!-- Category Filter -->
+      <div>
+        <label class="form-label">Filter by Category</label>
+        <select class="form-select" [(ngModel)]="selectedCategory" name="categoryFilter">
+          <option value="">All</option>
+          <option value="Seed">Seed</option>
+          <option value="Fertilizer">Fertilizer</option>
+          <option value="Pesticides">Pesticides</option>
+          <option value="Veterinary Supplies">Veterinary Supplies</option>
+          <option value="Feed">Feed</option>
+        </select>
       </div>
-    </div>
-  </div>
-  <!-- Dropdown to filter inventory items by category -->
+    
+      <!-- Search Input -->
+      <div>
+        <label class="form-label">Search by Name</label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter item name..."
+          [(ngModel)]="searchTerm"
+          name="searchInput"
+        />
+      </div>
+    </div>    
+  </section>
 
-  <h2>Items Status</h2>
-  <div class="dropdown">
-    <button
-      class="btn btn-primary dropdown-toggle"
-      type="button"
-      id="categoryDropdown"
-      data-bs-toggle="dropdown"
-      aria-expanded="false"
-    >
-      Choose a Category
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-      <li>
-        <a class="dropdown-item" href="#" (click)="selectCategory('Seed')"
-          >Seed</a
-        >
-      </li>
-      <li>
-        <a class="dropdown-item" href="#" (click)="selectCategory('Fertilizer')"
-          >Fertilizer</a
-        >
-      </li>
-      <li>
-        <a class="dropdown-item" href="#" (click)="selectCategory('Pesticides')"
-          >Pesticides</a
-        >
-      </li>
-      <li>
-        <a
-          class="dropdown-item"
-          href="#"
-          (click)="selectCategory('Veterinary Supplies')"
-          >Veterinary Supplies</a
-        >
-      </li>
-      <li>
-        <a class="dropdown-item" href="#" (click)="selectCategory('Feed')"
-          >Feed</a
-        >
-      </li>
-    </ul>
-  </div>
-  <!-- Displays items filtered by the selected category -->
-
-  <div *ngIf="selectedCategory">
-    <h2>{{ selectedCategory }} Items</h2>
+  <!-- Farm Supply List -->
+  <section class="farm-supply-list">
+    <h2>Farm Supply List</h2>
     <table class="table">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Stock Quantity</th>
+          <th scope="col">ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Category</th>
+          <th scope="col">Expiration Date</th>
         </tr>
       </thead>
       <tbody>
@@ -151,28 +51,62 @@
           <td>{{ item.id }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.quantity }}</td>
+          <td>{{ item.category }}</td>
+          <td>{{ item.expirationDate | date : "yyyy-MM-dd" }}</td>
           <td>
-            <span
-              *ngIf="item.quantity === item.maxStock"
-              class="badge bg-success"
-              >Fully Stocked</span
-            >
-            <span
-              *ngIf="item.quantity < item.restockThreshold"
-              class="badge bg-danger"
-              >Needs Immediate Restocking</span
-            >
-            <span
-              *ngIf="
-                item.quantity >= item.restockThreshold &&
-                item.quantity < item.maxStock
-              "
-              class="badge bg-warning"
-              >Low Stock</span
-            >
+            <button class="btn btn-sm btn-secondary" (click)="editSupply(item)">Edit</button>
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
+  </section>
+
+  <!-- Add Items Form -->
+  <section class="add-items">
+    <h2>{{isEditing ? 'Edit Item' : 'Add New Item'}}</h2>
+    <form (submit)="isEditing ? updateSupply() : addSupply()">
+      <div class="form-group">
+        <label for="name" class="form-label">Item Name</label>
+        <input type="text" class="form-control" id="name" [(ngModel)]="newItem.name" name="name" required />
+      </div>
+      <div class="form-group">
+        <label for="quantity" class="form-label">Quantity</label>
+        <input type="number" class="form-control" id="quantity" [(ngModel)]="newItem.quantity" name="quantity" required />
+      </div>
+      <div class="form-group">
+        <label for="category" class="form-label">Category</label>
+        <select class="form-select" id="category" [(ngModel)]="newItem.category" name="category">
+          <option value="Seed">Seed</option>
+          <option value="Fertilizer">Fertilizer</option>
+          <option value="Pesticides">Pesticides</option>
+          <option value="Veterinary Supplies">Veterinary Supplies</option>
+          <option value="Feed">Feed</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">{{ isEditing ? 'Update Supply' : 'Add Supply' }}</button>
+      <hr *ngIf="isEditing">
+      <button *ngIf="isEditing" type="button" class="btn btn-secondary ms-2" (click)="cancelEdit()">Cancel</button>
+    </form>
+  </section>
+
+  <!-- Stock Levels -->
+  <section class="stock-levels">
+    <h2>Stock Levels</h2>
+    <div *ngFor="let item of inventoryItems" class="stock-item">
+      <label>{{ item.name }} ({{ item.quantity }}/{{ item.maxStock }})</label>
+      <div class="progress">
+        <div
+          class="progress-bar"
+          [style.width]="getStockPercentage(item) + '%'"
+          [ngClass]="{
+            'bg-danger': getStockPercentage(item) < 30,
+            'bg-warning': getStockPercentage(item) < 60,
+            'bg-success': getStockPercentage(item) >= 60
+          }"
+        >
+          {{ getStockPercentage(item) }}%
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
