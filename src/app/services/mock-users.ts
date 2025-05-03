@@ -1,4 +1,4 @@
 export const USERS = [
-  { username: 'farmer1', password: 'password123' },
-  { username: 'admin', password: 'adminpass' }
+  { username: 'admin', password: 'admin123' },
+  { username: 'user1', password: 'pass1' }
 ];
