@@ -1,15 +1,14 @@
 <p class="inventory-status">Inventory is up and running!</p>
 
-<div class="inventory">
-  <h1 class="main-title">Inventory Management</h1>
+<div class="inventory container mt-4">
+  <h1 class="main-title text-center">Inventory Management</h1>
 
-  <section>
-     <!-- Category Filter -->
-     <div class="d-flex gap-3 mb-4 align-items-end">
-      <!-- Category Filter -->
+  <!-- FILTER SECTION -->
+  <section class="mb-4">
+    <div class="d-flex gap-3 flex-wrap align-items-end">
       <div>
-        <label class="form-label">Filter by Category</label>
-        <select class="form-select" [(ngModel)]="selectedCategory" name="categoryFilter">
+        <label for="categoryFilter" class="form-label">Filter by Category</label>
+        <select id="categoryFilter" class="form-select" [(ngModel)]="selectedCategory" name="categoryFilter" aria-label="Category Filter">
           <option value="">All</option>
           <option value="Seed">Seed</option>
           <option value="Fertilizer">Fertilizer</option>
@@ -18,32 +17,34 @@
           <option value="Feed">Feed</option>
         </select>
       </div>
-    
-      <!-- Search Input -->
+
       <div>
-        <label class="form-label">Search by Name</label>
+        <label for="searchInput" class="form-label">Search by Name</label>
         <input
+          id="searchInput"
           type="text"
           class="form-control"
           placeholder="Enter item name..."
           [(ngModel)]="searchTerm"
           name="searchInput"
+          aria-label="Search item by name"
         />
       </div>
-    </div>    
+    </div>
   </section>
 
-  <!-- Farm Supply List -->
+  <!-- TABLE LIST SECTION -->
   <section class="farm-supply-list">
     <h2>Farm Supply List</h2>
-    <table class="table">
-      <thead>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
         <tr>
-          <th scope="col">ID</th>
-          <th scope="col">Name</th>
-          <th scope="col">Quantity</th>
-          <th scope="col">Category</th>
-          <th scope="col">Expiration Date</th>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Quantity</th>
+          <th>Category</th>
+          <th>Expiration Date</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -52,47 +53,51 @@
           <td>{{ item.name }}</td>
           <td>{{ item.quantity }}</td>
           <td>{{ item.category }}</td>
-          <td>{{ item.expirationDate | date : "yyyy-MM-dd" }}</td>
+          <td>{{ item.expirationDate | date : 'yyyy-MM-dd' }}</td>
           <td>
-            <button class="btn btn-sm btn-secondary" (click)="editSupply(item)">Edit</button>
+            <button class="btn btn-sm btn-outline-secondary" (click)="editSupply(item)">Edit</button>
           </td>
         </tr>
       </tbody>
     </table>
   </section>
 
-  <!-- Add Items Form -->
-  <section class="add-items">
+  <!-- FORM SECTION -->
+  <section class="add-items mt-5">
     <h2>{{isEditing ? 'Edit Item' : 'Add New Item'}}</h2>
     <form (submit)="isEditing ? updateSupply() : addSupply()">
-      <div class="form-group">
-        <label for="name" class="form-label">Item Name</label>
-        <input type="text" class="form-control" id="name" [(ngModel)]="newItem.name" name="name" required />
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label for="name" class="form-label">Item Name</label>
+          <input type="text" class="form-control" id="name" [(ngModel)]="newItem.name" name="name" required />
+        </div>
+        <div class="col-md-4">
+          <label for="quantity" class="form-label">Quantity</label>
+          <input type="number" class="form-control" id="quantity" [(ngModel)]="newItem.quantity" name="quantity" required />
+        </div>
+        <div class="col-md-4">
+          <label for="category" class="form-label">Category</label>
+          <select class="form-select" id="category" [(ngModel)]="newItem.category" name="category" required>
+            <option disabled value="">Choose...</option>
+            <option value="Seed">Seed</option>
+            <option value="Fertilizer">Fertilizer</option>
+            <option value="Pesticides">Pesticides</option>
+            <option value="Veterinary Supplies">Veterinary Supplies</option>
+            <option value="Feed">Feed</option>
+          </select>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="quantity" class="form-label">Quantity</label>
-        <input type="number" class="form-control" id="quantity" [(ngModel)]="newItem.quantity" name="quantity" required />
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary">{{ isEditing ? 'Update Supply' : 'Add Supply' }}</button>
+        <button *ngIf="isEditing" type="button" class="btn btn-secondary ms-2" (click)="cancelEdit()">Cancel</button>
       </div>
-      <div class="form-group">
-        <label for="category" class="form-label">Category</label>
-        <select class="form-select" id="category" [(ngModel)]="newItem.category" name="category">
-          <option value="Seed">Seed</option>
-          <option value="Fertilizer">Fertilizer</option>
-          <option value="Pesticides">Pesticides</option>
-          <option value="Veterinary Supplies">Veterinary Supplies</option>
-          <option value="Feed">Feed</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary">{{ isEditing ? 'Update Supply' : 'Add Supply' }}</button>
-      <hr *ngIf="isEditing">
-      <button *ngIf="isEditing" type="button" class="btn btn-secondary ms-2" (click)="cancelEdit()">Cancel</button>
     </form>
   </section>
 
-  <!-- Stock Levels -->
-  <section class="stock-levels">
+  <!-- STOCK LEVELS SECTION -->
+  <section class="stock-levels mt-5">
     <h2>Stock Levels</h2>
-    <div *ngFor="let item of inventoryItems" class="stock-item">
+    <div *ngFor="let item of inventoryItems" class="mb-3">
       <label>{{ item.name }} ({{ item.quantity }}/{{ item.maxStock }})</label>
       <div class="progress">
         <div
