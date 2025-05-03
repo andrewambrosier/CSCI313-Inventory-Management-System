@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { InventoryItem } from '../../Models/inventory.model';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-inventory',
-  imports: [],
+  imports: [FormsModule, CommonModule],
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.css']
 })
@@ -40,5 +42,17 @@ export class InventoryComponent {
     this.newItem = { id: 0, productID: 0, name: '', quantity: 0, restockThreshold: 0,
       costPrice: 0, salePrice: 0, maxStock: 100, expirationDate: new Date(), category: ''
     }; 
+  }
+
+  selectedCategory: string | null = null;
+
+  selectCategory(category: string): void {
+    this.selectedCategory = category;
+  }
+
+  getFilteredItems(): InventoryItem[] {
+    return this.inventoryItems.filter(
+      item => item.category === this.selectedCategory
+    );
   }
 }
