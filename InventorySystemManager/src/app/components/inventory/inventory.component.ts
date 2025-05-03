@@ -8,6 +8,8 @@ import { InventoryItem } from '../../Models/inventory.model';
   styleUrl: './inventory.component.css'
 })
 export class InventoryComponent {
+  // Array containing inventory items with predefined properties
+
   inventoryItems: InventoryItem[] = [
     {
       id: 1, name: 'Tractor', quantity: 2, restockThreshold: 1, costPrice: 25000, salePrice: 30000,
@@ -18,7 +20,25 @@ export class InventoryComponent {
     }
 
   ];
+  // Function to calculate stock percentage for progress bars
+
   getStockPercentage(item: InventoryItem): number {
     return (item.quantity / item.maxStock) * 100; // makes a percentage so we can have progress bars
+  }
+  // Object representing a new inventory item before it is added
+
+  newItem: InventoryItem = {
+    id: 0, productID: 0, name: '', quantity: 0, restockThreshold: 0,
+    costPrice: 0, salePrice: 0, maxStock: 100, expirationDate: new Date(),
+    category: ''
+  };
+  // Function to add a new inventory item to the list
+
+  addSupply() {
+    this.inventoryItems.push({ ...this.newItem });
+    console.log('New supply added:', this.newItem);
+    this.newItem = { id: 0, productID: 0, name: '', quantity: 0, restockThreshold: 0,
+      costPrice: 0, salePrice: 0, maxStock: 100, expirationDate: new Date(), category: ''
+    }; 
   }
 }
