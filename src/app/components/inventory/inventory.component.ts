@@ -2,9 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { InventoryItem } from '../../Models/inventory.model';
 import { AuthService } from '../../services/auth.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-inventory',
+  standalone: true,
+  imports: [FormsModule, CommonModule],
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.css']
 })
