@@ -4,12 +4,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { USERS } from '../../services/mock-users';
-import { AuthService } from '../../services/auth.service';  // Auth state tracking
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
-  standalone: true,                  // Using standalone component
-  imports: [CommonModule, FormsModule],  // Required for *ngIf, ngModel
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -20,13 +20,11 @@ export class LoginComponent {
 
   constructor(private router: Router, private authService: AuthService) {}
 
-  login() {
-    console.log('Attempting login:', this.username, this.password);//Debug
-    console.log('Users:', USERS);//Debug
-    const user = USERS.find((u: any) => u.username === this.username && u.password === this.password);
+  login(): void {
+    const user = USERS.find(u => u.username === this.username && u.password === this.password);
     if (user) {
-      this.authService.setLoggedIn(true);   // Store auth state
-      this.router.navigate(['/inventory']); /// redirects
+      this.authService.setLoggedIn(true);
+      this.router.navigate(['/inventory']);
     } else {
       this.error = 'Invalid username or password';
     }
