@@ -35,6 +35,15 @@ export class InventoryComponent implements OnInit {
   ngOnInit(): void {
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/login']);
+    } else {
+      const saved = localStorage.getItem('inventoryItems');
+      if (saved) {
+        this.inventoryItems = JSON.parse(saved);
+        // Convert expirationDate strings to Date objects
+        this.inventoryItems.forEach(item => {
+          item.expirationDate = new Date(item.expirationDate);
+        })
+      }
     }
   }
 
@@ -60,6 +69,7 @@ export class InventoryComponent implements OnInit {
   addSupply(): void {
     this.newItem.id = this.inventoryItems.length + 1;
     this.inventoryItems.push({ ...this.newItem });
+    this.saveToLocalStorage();
     this.resetForm();
   }
 
@@ -72,6 +82,7 @@ export class InventoryComponent implements OnInit {
   updateSupply(): void {
     if (this.editIndex !== null) {
       this.inventoryItems[this.editIndex] = { ...this.newItem };
+      this.saveToLocalStorage();
       this.cancelEdit();
     }
   }
@@ -82,7 +93,29 @@ export class InventoryComponent implements OnInit {
     this.resetForm();
   }
 
+  deleteSupply(item: InventoryItem): void {
+    const confirmDelete = confirm('Are you sure you want to delete this item?');
+    if (!confirmDelete) {
+      return;
+    }
+    this.inventoryItems = this.inventoryItems.filter(i => i.id !== item.id);
+    localStorage.setItem('inventoryItems', JSON.stringify(this.inventoryItems));
+  }
+
+  resetInventory(): void {
+    const confirmReset = confirm('Are you sure you want to reset the inventory?');
+    if (confirmReset) {
+      this.inventoryItems = [];
+      this.saveToLocalStorage();
+    }
+    
+  }
+
   resetForm(): void {
     this.newItem = this.getEmptyItem();
+  }
+
+  saveToLocalStorage(): void {
+    localStorage.setItem('inventoryItems', JSON.stringify(this.inventoryItems));
   }
 }

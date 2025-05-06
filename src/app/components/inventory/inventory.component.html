@@ -55,7 +55,10 @@
           <td>{{ item.category }}</td>
           <td>{{ item.expirationDate | date : 'yyyy-MM-dd' }}</td>
           <td>
+            <div class = "d-flex gap-2">
             <button class="btn btn-sm btn-outline-secondary" (click)="editSupply(item)">Edit</button>
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteSupply(item)">Delete</button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -113,5 +116,13 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <section class="mt-5">
+    <div class="text-end my-3">
+      <button class="btn btn-danger" (click)="resetInventory()">
+        Reset Inventory
+      </button>
+    </div>    
   </section>
 </div>
