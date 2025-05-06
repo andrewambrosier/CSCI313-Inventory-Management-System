@@ -4,11 +4,12 @@ import { InventoryItem } from '../../Models/inventory.model';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
+import { RouterModule } from '@angular/router';
+import { Sale } from '../../Models/sales.model';
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.css']
 })
@@ -16,13 +17,15 @@ export class InventoryComponent implements OnInit {
   inventoryItems: InventoryItem[] = [
     {
       id: 1, name: 'Tractor', quantity: 2, restockThreshold: 1, costPrice: 25000, salePrice: 30000,
-      productID: 101, maxStock: 10, expirationDate: new Date('2030-12-22'), category: 'Equipment'
+      productID: 101, maxStock: 10, expirationDate: new Date('2030-12-22'), saleDate: new Date(), category: 'Equipment'
     },
     {
       id: 2, name: 'Compost', quantity: 20, restockThreshold: 5, costPrice: 15, salePrice: 25,
-      productID: 102, maxStock: 40, expirationDate: new Date('2025-08-15'), category: 'Fertilizer'
+      productID: 102, maxStock: 40, expirationDate: new Date('2025-08-15'), saleDate: new Date(), category: 'Fertilizer'
     }
   ];
+  
+  salesRecords: Sale[]=[];
 
   newItem: InventoryItem = this.getEmptyItem();
   isEditing = false;
@@ -31,18 +34,33 @@ export class InventoryComponent implements OnInit {
   searchTerm: string = '';
 
   constructor(private authService: AuthService, private router: Router) {}
+  logout(): void {
+    this.authService.setLoggedIn(false);
+    localStorage.removeItem('username');
+    this.router.navigate(['/login']);
+  }
 
+  
   ngOnInit(): void {
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/login']);
     } else {
-      const saved = localStorage.getItem('inventoryItems');
-      if (saved) {
-        this.inventoryItems = JSON.parse(saved);
-        // Convert expirationDate strings to Date objects
+      const savedInventory = localStorage.getItem('inventoryItems');
+      const savedSales = localStorage.getItem('salesRecords');
+  
+      if (savedInventory) {
+        this.inventoryItems = JSON.parse(savedInventory);
         this.inventoryItems.forEach(item => {
           item.expirationDate = new Date(item.expirationDate);
-        })
+          item.saleDate = new Date(item.saleDate);
+        });
+  
+        console.log('Loaded Inventory:', this.inventoryItems);
+      }
+  
+      if (savedSales) {
+        this.salesRecords = JSON.parse(savedSales);
+        console.log('Loaded Sales Records:', this.salesRecords);
       }
     }
   }
@@ -50,8 +68,13 @@ export class InventoryComponent implements OnInit {
   getEmptyItem(): InventoryItem {
     return {
       id: 0, name: '', quantity: 0, restockThreshold: 0, costPrice: 0, salePrice: 0,
-      productID: 0, maxStock: 100, expirationDate: new Date(), category: ''
+      productID: 0, maxStock: 100, expirationDate: new Date(), saleDate: new Date(), category: ''
     };
+  }
+
+  isExpired(item: InventoryItem): boolean {
+    const today = new Date();
+    return item.expirationDate < today;
   }
 
   getStockPercentage(item: InventoryItem): number {
@@ -68,10 +91,17 @@ export class InventoryComponent implements OnInit {
 
   addSupply(): void {
     this.newItem.id = this.inventoryItems.length + 1;
+    this.newItem.productID = 100 + this.newItem.id; 
+    this.newItem.expirationDate = new Date(this.newItem.expirationDate);
+    this.newItem.saleDate = new Date(this.newItem.saleDate);
     this.inventoryItems.push({ ...this.newItem });
+  
+    console.log('Added New Item:', this.newItem);
+  
     this.saveToLocalStorage();
     this.resetForm();
   }
+
 
   editSupply(item: InventoryItem): void {
     this.isEditing = true;
@@ -116,6 +146,24 @@ export class InventoryComponent implements OnInit {
   }
 
   saveToLocalStorage(): void {
+    console.log('Saving Inventory:', this.inventoryItems);
+    console.log('Saving Sales Records:', this.salesRecords);
+  
     localStorage.setItem('inventoryItems', JSON.stringify(this.inventoryItems));
+    localStorage.setItem('salesRecords', JSON.stringify(this.salesRecords));
+  }
+  updateInventoryAfterSale(productId: number, quantitySold: number): void {
+    console.log('Updating Inventory for Sale...');
+    console.log('Product ID:', productId);
+    console.log('Quantity Sold:', quantitySold);
+  
+    const item = this.inventoryItems.find(i => i.productID === productId);
+    if (item) {
+      item.quantity -= quantitySold;
+      console.log('Updated Item:', item);
+      this.saveToLocalStorage();
+    } else {
+      console.log('Error: Product not found in inventory.');
+    }
   }
 }

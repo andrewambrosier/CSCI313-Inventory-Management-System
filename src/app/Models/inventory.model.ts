@@ -8,5 +8,6 @@ export interface InventoryItem {
     salePrice: number;          //Sales price per unit
     maxStock: number;           //Max stock so progress bars can have a limit
     expirationDate: Date;
-    category: String
+    category: String;
+    saleDate: Date
   }
