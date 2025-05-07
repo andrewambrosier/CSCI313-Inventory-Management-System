@@ -23,7 +23,8 @@ export class LoginComponent {
   login(): void {
     const user = USERS.find(u => u.username === this.username && u.password === this.password);
     if (user) {
-      this.authService.setLoggedIn(true);
+      this.authService.setLoggedIn(true); // Store login state in localStorage
+      localStorage.setItem('username', this.username); // Optional: Store username
       this.router.navigate(['/inventory']);
     } else {
       this.error = 'Invalid username or password';

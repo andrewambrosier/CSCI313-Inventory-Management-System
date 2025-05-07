@@ -1,4 +1,32 @@
-<p class="inventory-status">Inventory is up and running!</p>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" routerLink="/">Home</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/inventory">Inventory</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/sales">Sales</a>
+        </li>
+      </ul>
+      <button class="btn btn-danger small-btn" (click)="logout()">
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>
 
 <div class="inventory container mt-4">
   <h1 class="main-title text-center">Inventory Management</h1>
@@ -7,14 +35,23 @@
   <section class="mb-4">
     <div class="d-flex gap-3 flex-wrap align-items-end">
       <div>
-        <label for="categoryFilter" class="form-label">Filter by Category</label>
-        <select id="categoryFilter" class="form-select" [(ngModel)]="selectedCategory" name="categoryFilter" aria-label="Category Filter">
+        <label for="categoryFilter" class="form-label"
+          >Filter by Category</label
+        >
+        <select
+          id="categoryFilter"
+          class="form-select"
+          [(ngModel)]="selectedCategory"
+          name="categoryFilter"
+          aria-label="Category Filter"
+        >
           <option value="">All</option>
           <option value="Seed">Seed</option>
           <option value="Fertilizer">Fertilizer</option>
           <option value="Pesticides">Pesticides</option>
           <option value="Veterinary Supplies">Veterinary Supplies</option>
           <option value="Feed">Feed</option>
+          <option value="Equipment">Equipment</option>
         </select>
       </div>
 
@@ -44,6 +81,7 @@
           <th>Quantity</th>
           <th>Category</th>
           <th>Expiration Date</th>
+          <th>Expiration Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -53,11 +91,25 @@
           <td>{{ item.name }}</td>
           <td>{{ item.quantity }}</td>
           <td>{{ item.category }}</td>
-          <td>{{ item.expirationDate | date : 'yyyy-MM-dd' }}</td>
+          <td>{{ item.expirationDate | date : "yyyy-MM-dd" }}</td>
           <td>
-            <div class = "d-flex gap-2">
-            <button class="btn btn-sm btn-outline-secondary" (click)="editSupply(item)">Edit</button>
-            <button class="btn btn-sm btn-outline-danger" (click)="deleteSupply(item)">Delete</button>
+            <span *ngIf="isExpired(item)" class="text-danger">Expired</span>
+            <span *ngIf="!isExpired(item)" class="text-success">Safe</span>
+          </td>
+          <td>
+            <div class="d-flex gap-2">
+              <button
+                class="btn btn-sm btn-outline-secondary"
+                (click)="editSupply(item)"
+              >
+                Edit
+              </button>
+              <button
+                class="btn btn-sm btn-outline-danger"
+                (click)="deleteSupply(item)"
+              >
+                Delete
+              </button>
             </div>
           </td>
         </tr>
@@ -67,32 +119,96 @@
 
   <!-- FORM SECTION -->
   <section class="add-items mt-5">
-    <h2>{{isEditing ? 'Edit Item' : 'Add New Item'}}</h2>
+    <h2>{{ isEditing ? "Edit Item" : "Add New Item" }}</h2>
     <form (submit)="isEditing ? updateSupply() : addSupply()">
       <div class="row g-3">
         <div class="col-md-4">
           <label for="name" class="form-label">Item Name</label>
-          <input type="text" class="form-control" id="name" [(ngModel)]="newItem.name" name="name" required />
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            [(ngModel)]="newItem.name"
+            name="name"
+            required
+          />
         </div>
         <div class="col-md-4">
           <label for="quantity" class="form-label">Quantity</label>
-          <input type="number" class="form-control" id="quantity" [(ngModel)]="newItem.quantity" name="quantity" required />
+          <input
+            type="number"
+            class="form-control"
+            id="quantity"
+            [(ngModel)]="newItem.quantity"
+            name="quantity"
+            required
+          />
         </div>
         <div class="col-md-4">
           <label for="category" class="form-label">Category</label>
-          <select class="form-select" id="category" [(ngModel)]="newItem.category" name="category" required>
+          <select
+            class="form-select"
+            id="category"
+            [(ngModel)]="newItem.category"
+            name="category"
+            required
+          >
             <option disabled value="">Choose...</option>
             <option value="Seed">Seed</option>
             <option value="Fertilizer">Fertilizer</option>
             <option value="Pesticides">Pesticides</option>
             <option value="Veterinary Supplies">Veterinary Supplies</option>
             <option value="Feed">Feed</option>
+            <option value="Equipment">Equipment</option>
           </select>
+        </div>
+
+        <div class="col-md-4">
+          <label for="expirationDate" class="form-label">Expiration Date</label>
+          <input
+            type="date"
+            class="form-control"
+            id="expirationDate"
+            [(ngModel)]="newItem.expirationDate"
+            name="expirationDate"
+            required
+          />
+        </div>
+        <div class="col-md-4">
+          <label for="number" class="form-label">Cost</label>
+          <input
+            type="number"
+            class="form-control"
+            id="costPrice"
+            [(ngModel)]="newItem.costPrice"
+            name="costPrice"
+            required
+          />
+        </div>
+        <div class="col-md-4">
+          <label for="number" class="form-label">Max Stock</label>
+          <input
+            type="number"
+            class="form-control"
+            id="maxStock"
+            [(ngModel)]="newItem.maxStock"
+            name="maxStock"
+            required
+          />
         </div>
       </div>
       <div class="mt-3">
-        <button type="submit" class="btn btn-primary">{{ isEditing ? 'Update Supply' : 'Add Supply' }}</button>
-        <button *ngIf="isEditing" type="button" class="btn btn-secondary ms-2" (click)="cancelEdit()">Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          {{ isEditing ? "Update Supply" : "Add Supply" }}
+        </button>
+        <button
+          *ngIf="isEditing"
+          type="button"
+          class="btn btn-secondary ms-2"
+          (click)="cancelEdit()"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   </section>
@@ -123,6 +239,109 @@
       <button class="btn btn-danger" (click)="resetInventory()">
         Reset Inventory
       </button>
-    </div>    
+    </div>
+  </section>
+  <h1 class="main-title text-center">Equipment Management</h1>
+
+  <section class="maintenance-section mt-5">
+    <h2>Schedule Equipment Maintenance</h2>
+    <form (submit)="scheduleMaintenance()">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label for="equipmentSelect" class="form-label"
+            >Select Equipment</label
+          >
+          <select
+            class="form-select"
+            id="equipmentSelect"
+            [(ngModel)]="selectedEquipment"
+            name="equipmentSelect"
+            required
+          >
+            <option disabled value="">Choose...</option>
+
+            <option *ngFor="let item of getEquipmentItems()" [value]="item.id">
+              {{ item.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label for="maintenanceType" class="form-label"
+            >Maintenance Type</label
+          >
+          <select
+            class="form-select"
+            id="maintenanceType"
+            [(ngModel)]="newMaintenance.maintenanceType"
+            name="maintenanceType"
+            required
+          >
+            <option disabled value="">Choose...</option>
+            <option value="Oil Change">Oil Change</option>
+            <option value="Tire Replacement">Tire Replacement</option>
+            <option value="Engine Check">Engine Check</option>
+            <option value="Brake Inspection">Brake Inspection</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label for="maintenanceDate" class="form-label">Scheduled Date</label>
+          <input
+            type="date"
+            class="form-control"
+            id="maintenanceDate"
+            [(ngModel)]="newMaintenance.maintenanceDate"
+            name="maintenanceDate"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary">
+          Schedule Maintenance
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Maintenance Schedule Table -->
+  <section class="maintenance-list mt-5">
+    <h2>Upcoming Maintenance</h2>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Equipment</th>
+          <th>Maintenance Type</th>
+          <th>Scheduled Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let maintenance of maintenanceSchedule">
+          <td>{{ maintenance.equipmentName }}</td>
+          <td>{{ maintenance.maintenanceType }}</td>
+          <td>{{ maintenance.maintenanceDate | date : "yyyy-MM-dd" }}</td>
+          <td>
+            <span *ngIf="isPastDue(maintenance)" class="text-danger"
+              >Overdue</span
+            >
+            <span *ngIf="!isPastDue(maintenance)" class="text-success"
+              >Scheduled</span
+            >
+          </td>
+          <td>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="deleteMaintenance(maintenance)"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 </div>

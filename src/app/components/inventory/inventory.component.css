@@ -140,4 +140,23 @@ body {
     border-radius: 12px;
     color: white;
   }
+  .small-btn {
+    font-size: 12px;
+    padding: 4px 8px; 
+    height: 30px; 
+    width: auto; 
+    background-color: #dc3545;
+  }
+  .expired {
+    background-color: #ffcccc;
+  }
   
+  .text-danger {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .text-success {
+    color: green;
+    font-weight: bold;
+  }

@@ -1,1 +1,121 @@
-<p>sales works!</p>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" routerLink="/">Home</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/inventory">Inventory</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/sales">Sales</a>
+        </li>
+      </ul>
+      <button class="btn btn-danger small-btn" (click)="logout()">
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="sales container mt-4">
+  <h1 class="main-title text-center">Sales Management</h1>
+
+  <div class="container">
+    <h2>Sales Records</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Product Name</th>
+          <th>Quantity Sold</th>
+          <th>Sale Price</th>
+          <th>Total Revenue</th>
+          <th>Sale Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let sale of salesRecords">
+          <td>{{ sale.id }}</td>
+          <td>{{ sale.name }}</td>
+          <td>{{ sale.quantitySold }}</td>
+          <td>${{ sale.salePrice }}</td>
+          <td>${{ sale.totalRevenue }}</td>
+          <td>{{ sale.saleDate | date : "MM/dd/yyyy" }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="container">
+      <h2>Create New Sale</h2>
+      <form (ngSubmit)="createSale()">
+        <div class="col-md-4">
+          <label for="product" class="form-label">Select Product</label>
+          <select
+            class="form-control"
+            id="product"
+            [(ngModel)]="selectedProductId"
+            name="product"
+            required
+            (change)="updateSelectedProduct()"
+          >
+            <option
+              *ngFor="let item of inventoryItems"
+              [value]="item.productID"
+            >
+              {{ item.name }} (Stock: {{ item.quantity }})
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label for="quantity" class="form-label">Quantity Sold</label>
+          <input
+            type="number"
+            class="form-control"
+            id="quantity"
+            [(ngModel)]="quantitySold"
+            name="quantity"
+            [max]="selectedProduct?.quantity ?? 0"
+            required
+          />
+        </div>
+        <div class="col-md-4">
+          <label for="saleDate" class="form-label">Sale Date</label>
+          <input
+            type="date"
+            class="form-control"
+            id="saleDate"
+            [(ngModel)]="saleDate"
+            name="saleDate"
+            required
+          />
+        </div>
+        <div class="col-md-4">
+          <label for="salePrice" class="form-label"
+            >Price of Individual Item</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            id="salePrice"
+            [(ngModel)]="salePrice"
+            name="salePrice"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-success">Record Sale</button>
+      </form>
+    </div>
+  </div>
+</div>
