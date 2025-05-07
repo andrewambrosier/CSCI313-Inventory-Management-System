@@ -162,6 +162,7 @@
             <option value="Equipment">Equipment</option>
           </select>
         </div>
+
         <div class="col-md-4">
           <label for="expirationDate" class="form-label">Expiration Date</label>
           <input
@@ -239,5 +240,108 @@
         Reset Inventory
       </button>
     </div>
+  </section>
+  <h1 class="main-title text-center">Equipment Management</h1>
+
+  <section class="maintenance-section mt-5">
+    <h2>Schedule Equipment Maintenance</h2>
+    <form (submit)="scheduleMaintenance()">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label for="equipmentSelect" class="form-label"
+            >Select Equipment</label
+          >
+          <select
+            class="form-select"
+            id="equipmentSelect"
+            [(ngModel)]="selectedEquipment"
+            name="equipmentSelect"
+            required
+          >
+            <option disabled value="">Choose...</option>
+
+            <option *ngFor="let item of getEquipmentItems()" [value]="item.id">
+              {{ item.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label for="maintenanceType" class="form-label"
+            >Maintenance Type</label
+          >
+          <select
+            class="form-select"
+            id="maintenanceType"
+            [(ngModel)]="newMaintenance.maintenanceType"
+            name="maintenanceType"
+            required
+          >
+            <option disabled value="">Choose...</option>
+            <option value="Oil Change">Oil Change</option>
+            <option value="Tire Replacement">Tire Replacement</option>
+            <option value="Engine Check">Engine Check</option>
+            <option value="Brake Inspection">Brake Inspection</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label for="maintenanceDate" class="form-label">Scheduled Date</label>
+          <input
+            type="date"
+            class="form-control"
+            id="maintenanceDate"
+            [(ngModel)]="newMaintenance.maintenanceDate"
+            name="maintenanceDate"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary">
+          Schedule Maintenance
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Maintenance Schedule Table -->
+  <section class="maintenance-list mt-5">
+    <h2>Upcoming Maintenance</h2>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Equipment</th>
+          <th>Maintenance Type</th>
+          <th>Scheduled Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let maintenance of maintenanceSchedule">
+          <td>{{ maintenance.equipmentName }}</td>
+          <td>{{ maintenance.maintenanceType }}</td>
+          <td>{{ maintenance.maintenanceDate | date : "yyyy-MM-dd" }}</td>
+          <td>
+            <span *ngIf="isPastDue(maintenance)" class="text-danger"
+              >Overdue</span
+            >
+            <span *ngIf="!isPastDue(maintenance)" class="text-success"
+              >Scheduled</span
+            >
+          </td>
+          <td>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="deleteMaintenance(maintenance)"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 </div>

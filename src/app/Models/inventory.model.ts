@@ -10,4 +10,8 @@ export interface InventoryItem {
     expirationDate: Date;
     category: String;
     saleDate: Date
+
+    vehicleType?:string;
+    maintenanceType?:string;
+    maintenanceDate?:string;
   }

@@ -47,6 +47,7 @@ export class InventoryComponent implements OnInit {
     } else {
       const savedInventory = localStorage.getItem('inventoryItems');
       const savedSales = localStorage.getItem('salesRecords');
+      const savedMaintenance = localStorage.getItem('maintenanceSchedule');
   
       if (savedInventory) {
         this.inventoryItems = JSON.parse(savedInventory);
@@ -54,13 +55,14 @@ export class InventoryComponent implements OnInit {
           item.expirationDate = new Date(item.expirationDate);
           item.saleDate = new Date(item.saleDate);
         });
-  
-        console.log('Loaded Inventory:', this.inventoryItems);
       }
   
       if (savedSales) {
         this.salesRecords = JSON.parse(savedSales);
-        console.log('Loaded Sales Records:', this.salesRecords);
+      }
+  
+      if (savedMaintenance) {
+        this.maintenanceSchedule = JSON.parse(savedMaintenance);
       }
     }
   }
@@ -145,13 +147,7 @@ export class InventoryComponent implements OnInit {
     this.newItem = this.getEmptyItem();
   }
 
-  saveToLocalStorage(): void {
-    console.log('Saving Inventory:', this.inventoryItems);
-    console.log('Saving Sales Records:', this.salesRecords);
   
-    localStorage.setItem('inventoryItems', JSON.stringify(this.inventoryItems));
-    localStorage.setItem('salesRecords', JSON.stringify(this.salesRecords));
-  }
   updateInventoryAfterSale(productId: number, quantitySold: number): void {
     console.log('Updating Inventory for Sale...');
     console.log('Product ID:', productId);
@@ -166,4 +162,83 @@ export class InventoryComponent implements OnInit {
       console.log('Error: Product not found in inventory.');
     }
   }
+  maintenanceSchedule: any[] = [];
+
+  getMaintenanceSchedule(): any[] {
+    return this.maintenanceSchedule.filter(m => m.maintenanceType);
+  }
+
+  
+  
+  editMaintenance(item: InventoryItem): void {
+    this.newItem = { ...item };
+    this.isEditing = true;
+  }
+  
+  
+  checkMaintenanceAlerts(): void {
+    this.inventoryItems.forEach(item => {
+      if (item.category === 'Equipment' && item.maintenanceDate) {
+        const daysLeft = (new Date(item.maintenanceDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24);
+        if (daysLeft <= 3) {
+          alert(`🚜 Reminder: Maintenance for ${item.vehicleType} is due in ${Math.ceil(daysLeft)} days.`);
+        }
+      }
+    });
+  }
+  selectedEquipment: number | null = null;
+  newMaintenance = {
+  equipmentName: '',
+  maintenanceType: '',
+  maintenanceDate: new Date(),
+};
+
+
+scheduleMaintenance(): void {
+  if (!this.selectedEquipment) {
+    alert('Please select an equipment item.');
+    return;
+  }
+
+  
+  const equipment = this.inventoryItems.find(item => item.id === Number(this.selectedEquipment));
+
+  if (!equipment) {
+    alert('Invalid equipment selection.');
+    return;
+  }
+
+  const newEntry = {
+    equipmentName: equipment.name,
+    maintenanceType: this.newMaintenance.maintenanceType,
+    maintenanceDate: new Date(this.newMaintenance.maintenanceDate),
+  };
+
+  this.maintenanceSchedule.push(newEntry);
+  this.saveToLocalStorage();
+  this.resetMaintenanceForm();
+}
+isPastDue(maintenance: any): boolean {
+  return maintenance.maintenanceDate ? new Date(maintenance.maintenanceDate) < new Date() : false;
+}
+deleteMaintenance(maintenance: any): void {
+  this.maintenanceSchedule = this.maintenanceSchedule.filter(m => m !== maintenance);
+  this.saveToLocalStorage();
+}
+resetMaintenanceForm(): void {
+  this.selectedEquipment = null;
+  this.newMaintenance = {
+    equipmentName: '',
+    maintenanceType: '',
+    maintenanceDate: new Date(),
+  };
+}
+saveToLocalStorage(): void {
+  localStorage.setItem('inventoryItems', JSON.stringify(this.inventoryItems));
+  localStorage.setItem('salesRecords', JSON.stringify(this.salesRecords));
+  localStorage.setItem('maintenanceSchedule', JSON.stringify(this.maintenanceSchedule));
+}
+getEquipmentItems(): InventoryItem[] {
+  return this.inventoryItems.filter(item => item.category === 'Equipment');
+}
 }
